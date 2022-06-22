@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:student_management/model/student.dart';
+import 'package:student_management/screen/student_detail_screen.dart';
 import 'package:student_management/service/db_helper.dart';
 
 class StudentListView extends StatefulWidget {
-  StudentListView({Key? key}) : super(key: key);
+  const StudentListView({Key? key}) : super(key: key);
 
   @override
   State<StudentListView> createState() => _StudentListViewState();
@@ -14,8 +15,6 @@ class _StudentListViewState extends State<StudentListView> {
 
   @override
   void initState() {
-    // TODO: implement initState
-
     super.initState();
     getData();
   }
@@ -28,15 +27,51 @@ class _StudentListViewState extends State<StudentListView> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-        child: ListView.builder(
-          itemCount: studentList.length,
-          itemBuilder: (BuildContext context, int index) {
-            Student student = studentList[index];
+        onRefresh: () => getData(),
+        child: Container(
+            margin: const EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width,
+            child: DataTable(
+                columns: const [
+                  // DataColumn(
+                  //   label: Text('ID'),
+                  // ),
+                  DataColumn(
+                    label: Text('NAME'),
+                  ),
+                  DataColumn(
+                    label: Text('VIEW'),
+                  ),
+                ],
+                rows: List.generate(
+                    studentList.length,
+                    (index) => DataRow(cells: [
+                          // DataCell(Text(studentList[index].id!.toString())),
+                          DataCell(Text(studentList[index].name)),
+                          DataCell(
+                            TextButton(
+                              child: const Icon(
+                                Icons.chevron_right,
+                                color: Colors.black,
+                              ),
+                              onPressed: () async {
+                                bool? isModified = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        fullscreenDialog: true,
+                                        builder: (context) =>
+                                            StudentDetailScreen(
+                                              student: studentList[index],
+                                            )));
 
-            return ListTile(
-                title: Text("아이디 : ${student.id} , 이름 : ${student.name}"));
-          },
-        ),
-        onRefresh: () => getData());
+                                if (isModified != null && isModified == true) {
+                                  setState(() {
+                                    getData();
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ])))));
   }
 }

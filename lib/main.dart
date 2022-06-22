@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:student_management/screen/student_add_view.dart';
 import 'package:student_management/screen/student_home_screen.dart';
+import 'package:student_management/service/db_helper.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await DBHelper().initDatabase();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    DBHelper().close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

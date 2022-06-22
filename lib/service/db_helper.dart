@@ -6,7 +6,13 @@ import 'dart:io' as io;
 import 'package:path/path.dart';
 
 class DBHelper {
-  static Database? _db;
+  DBHelper._privateConstructor();
+
+  static final DBHelper _instance = DBHelper._privateConstructor();
+  factory DBHelper() {
+    return _instance;
+  }
+  Database? _db;
 
   Future<Database> get db async {
     if (_db != null) return _db!;
@@ -28,19 +34,35 @@ class DBHelper {
   }
 
   Future<Student> add(Student student) async {
-    var dbClient = await db;
-    student.id = await dbClient.insert('student', student.toMap());
-    return student;
+    try {
+      var dbClient = await db;
+      student.id = await dbClient.insert('student', student.toMap());
+      return student;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<List<Student>> getStudents() async {
     var dbClient = await db;
-    List<Map> maps = await dbClient.query('student', columns: ['id', 'name']);
+    List<Map> maps = await dbClient.query('student', columns: [
+      'id',
+      'name',
+      'department',
+      'dob',
+      'gender',
+      'language_korean',
+      'language_english',
+      'language_chinese'
+    ]);
+
+    if (maps.isEmpty) {
+      return [];
+    }
+
     List<Student> students = [];
-    if (maps.length > 0) {
-      for (int i = 0; i < maps.length; i++) {
-        students.add(Student.fromMap(maps[i]));
-      }
+    for (int i = 0; i < maps.length; i++) {
+      students.add(Student.fromMap(maps[i]));
     }
     return students;
   }

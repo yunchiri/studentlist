@@ -12,13 +12,17 @@ class StudentHomeScreen extends StatefulWidget {
 class _StudentScreenState extends State<StudentHomeScreen> {
   int _selectedIndex = 0;
 
-  List<Widget> studentViewList = [StudentAddView(), StudentListView()];
+  List<Widget> studentViewList = const [
+    StudentAddView(
+      key: Key('add'),
+    ),
+    StudentListView()
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
-        title: Text("Student List"),
+        title: const Text("Student List"),
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (value) {
